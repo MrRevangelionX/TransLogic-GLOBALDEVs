@@ -14,7 +14,9 @@
     $nOrder = $data['nOrder'];
     $uCreation = $data['uCreation'];
 
-    $actualizar = "";
+    $actualizar = "UPDATE wapp_proceso_translogic
+                   SET dtLastChange = GETDATE(), dtCheckCompletado = GETDATE(), uCheckCompletado = '".$uCreation."'
+                   WHERE nOrden = '".$nOrder."';";
 
     // echo $actualizar;
     // exit;

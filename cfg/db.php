@@ -1,4 +1,6 @@
 <?php
+	date_default_timezone_set('America/El_Salvador');
+
 	// BASE DE PRODUCCION
     // $server ="192.168.21.2";
     // $username ="sr2008";
