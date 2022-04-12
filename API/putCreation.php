@@ -40,6 +40,9 @@
                                                      "transporte_asignado" => $nTransporte,
                                                      "fecha_asignado" => $aFecha
                                                     ));
+
+//SET TICKETS PARAMS QR AND BODY
+$qrCode= $nOrder.",".$nTransporte;
 $body = "
 
 
@@ -59,7 +62,7 @@ N°: ".$nTransporte."
 
 
 ";
-        getTicket($nOrder, $body);
+        getTicket($qrCode, $body);
     }else{
         array_push($asignacion['asignacion'], array( "orden_material" => "ERROR",
                                                      "transporte_asignado" => "ERROR",
