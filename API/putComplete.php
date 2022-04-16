@@ -1,5 +1,5 @@
 <?php
-    // error_reporting(0);
+    error_reporting(0);
     $json = file_get_contents('php://input');
     // $json = file_get_contents('./checkComplete.txt');
     $data = json_decode($json, TRUE);

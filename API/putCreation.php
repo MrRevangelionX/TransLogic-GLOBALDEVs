@@ -1,5 +1,5 @@
 <?php
-    // error_reporting(0);
+    error_reporting(0);
     $json = file_get_contents('php://input');
     // $json = file_get_contents('./asignaBodega.txt');
     $data = json_decode($json, TRUE);
@@ -32,8 +32,12 @@
 
     $resultado = Query($insertar);
 
+    $consulta = "select * from inv_transaccion_det
+                 where correlativo = '".$nOrder."';";
+                 
+    $rs = Query($consulta);
+
     $asignacion['asignacion'] = array();
-    $aFecha = date('d-M-y H:i:s');
 
     if($resultado){
         array_push($asignacion['asignacion'], array( "orden_material" => $nOrder,
@@ -43,26 +47,24 @@
 
 //SET TICKETS PARAMS QR AND BODY
 $qrCode= $nOrder.",".$nTransporte;
+foreach($rs as $row){
+    $lista .= $row['cantidad']. " - " .$row['descripcionlinea']. " \n";
+};
 $body = "
-
-
 
 Requerimiento de Materiales
 N°: ".$nOrder."
 
-        
 
 Asignada correctamente al transporte
 N°: ".$nTransporte."
 
 
-
-
-".$aFecha."
-
-
 ";
-        getTicket($qrCode, $body);
+
+    // Se manda a imprimir el Ticket
+    // getTicket($qrCode, $body, $lista);
+
     }else{
         array_push($asignacion['asignacion'], array( "orden_material" => "ERROR",
                                                      "transporte_asignado" => "ERROR",
