@@ -8,7 +8,7 @@
     // $database ="negocios_g";
 
 	// BASE DE LOCAL
-    $server =".";
+    $server ="192.168.140.15";
     $username ="Desarrollo";
     $password ="123";
     $database ="negocios_g";

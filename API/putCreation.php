@@ -5,12 +5,16 @@
     $data = json_decode($json, TRUE);
 
     // DUMP HACIA UN ARCHIVO JSON
-    // $myfile = fopen("asignaBodega.txt", "w");
-    // fwrite($myfile, $json);
-    // fclose($myfile);
+    $myfile = fopen("asignaBodega.txt", "w");
+    fwrite($myfile, $json);
+    fclose($myfile);
 
     require_once('../cfg/db.php');
     require_once('./Printer/ThermalPrinter.php');
+
+    // $nOrder = '517708';
+    // $nTransporte = 'P943332';
+    // $uCreation = 'MrRX';
 
     $nOrder = $data['nOrder'];
     $nTransporte = $data['nTransporte'];
@@ -32,38 +36,49 @@
 
     $resultado = Query($insertar);
 
-    $consulta = "select * from inv_transaccion_det
+    if($resultado){
+
+        $consulta = "select * from inv_transaccion_det det
+                 inner join gen_proyecto p on det.codproyecto = p.codproyecto
                  where correlativo = '".$nOrder."';";
                  
-    $rs = Query($consulta);
+        $rs = Query($consulta);
+        $aFecha = date('d-M-y H:i:s');
+        $lista = "";
+        $asignacion['asignacion'] = array();
 
-    $asignacion['asignacion'] = array();
-
-    if($resultado){
         array_push($asignacion['asignacion'], array( "orden_material" => $nOrder,
                                                      "transporte_asignado" => $nTransporte,
                                                      "fecha_asignado" => $aFecha
                                                     ));
 
-//SET TICKETS PARAMS QR AND BODY
-$qrCode= $nOrder.",".$nTransporte;
-foreach($rs as $row){
-    $lista .= $row['cantidad']. " - " .$row['descripcionlinea']. " \n";
-};
-$body = "
 
-Requerimiento de Materiales
-N°: ".$nOrder."
+            $qrCode = $nOrder.",".$nTransporte;
 
+            foreach($rs as $row){
+                $lista .= $row['cantidad']. " - " .$row['codproducto']. " - " .$row['descripcionlinea']. " \n";
+                $Proyecto ="Proyecto: ".$row['nomproyecto'];
+                $Poligono ="Poligono: ".$row['poligono'];
+                $Lote ="Lote: ".$row['lote'];
+            };
+            
+            $body = "
+            
+            Requerimiento de Materiales
+            N°: ".$nOrder."
+            
+            Asignada correctamente al transporte
+            N°: ".$nTransporte."
+            
+            Ubicación de Destino:
+            ".$Proyecto."
+            ".$Poligono."
+            ".$Lote."
+            
+            ";
 
-Asignada correctamente al transporte
-N°: ".$nTransporte."
-
-
-";
-
-    // Se manda a imprimir el Ticket
-    // getTicket($qrCode, $body, $lista);
+        // Se manda a imprimir el Ticket
+        //getTicket($qrCode, $body, $lista);
 
     }else{
         array_push($asignacion['asignacion'], array( "orden_material" => "ERROR",

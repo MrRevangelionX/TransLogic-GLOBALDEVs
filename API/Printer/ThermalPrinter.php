@@ -6,7 +6,7 @@ use Mike42\Escpos\Printer;
 function getTicket($qrcode, $body, $lista){
     try{
         // Enter the share name for your USB printer here
-        $connector = new WindowsPrintConnector("smb://192.168.140.15/TM-T20IIIL");
+        $connector = new WindowsPrintConnector("smb://192.168.15.73/TM-T20IIIL");
         $printer = new Printer($connector);
 
         $linea = "------------------------------------------------";

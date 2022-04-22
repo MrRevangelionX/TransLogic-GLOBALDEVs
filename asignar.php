@@ -5,25 +5,11 @@
     }else{
     require_once('./cfg/db.php');
 
-    $consulta = "select TOP 1000
-                    CONVERT(DATE,a.fecha) as Fecha,
-                    b.nomempresa as Empresa,
-                    a.codsucursal,
-                    c.nomsucursal as Sucursal,
-                    d.nombodega as Bodega,
-                    a.correlativo as Correlativo,
-                    a.numerodocumento as Documento,
-                    a.codproyecto,
-                    e.nomproyecto as Proyecto
-                from inv_transaccion_enc a
-                inner join gen_empresa b on a.codempresa = b.codempresa
-                inner join gen_sucursal c on a.codsucursal = c.codsucursal
-                inner join gen_bodega d on a.codbodega = d.codbodega
-                full join gen_proyecto e on a.codproyecto = e.codproyecto
-                where a.fechadespacho is null and a.impresa = 1
-                and a.codtipomovimiento = 6 and a.codtipodoc = 8
-                --and fecha between CAST( GETDATE() - 30 AS Date ) and CAST( GETDATE() AS Date )
-                order by fecha desc, a.correlativo asc";
+    $consulta = "select * from wapp_proceso_translogic trans
+                inner join inv_transaccion_enc enc on trans.nOrden = enc.correlativo
+                inner join app_contratista cont on cont.codcontratista = enc.codcontratista
+                where dtCheckBodega is null
+                order by dtCreacion asc";
 
     $rs = Query($consulta);
     
@@ -74,7 +60,7 @@
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
-            <li id="mnuAsignacion" class="nav-item">
+            <li id="mnuAsignacion" class="nav-item active">
                 <a class="nav-link" href="asignar.php">
                     <i class="fa-solid fa-file-signature"></i>
                     <span>Asignacion</span></a>
@@ -84,11 +70,11 @@
             <hr class="sidebar-divider">
 
             <!-- Nav Item - Main -->
-            <li id="mnuRegistro" class="nav-item active">
+            <li id="mnuRegistro" class="nav-item">
                 <a class="nav-link" href="./main.php">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Registro</span></a>
-            </li>
+            </li>            
 
             <li id="mnuCompletados" class="nav-item">
                 <a class="nav-link" href="./completed.php">
@@ -130,8 +116,7 @@
                     </form>
 
                     <!-- Topbar Search -->
-                    <form
-                        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                         <div class="input-group">
                             <input hidden type="text" class="form-control bg-light border-0 small" placeholder="Buscar..."
                                 aria-label="Search" aria-describedby="basic-addon2">
@@ -196,34 +181,77 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
+                    
+                    <!-- Assign Trip -->
+                    <form method="post">
+                        <div class="input-group">
+                            <input  type="text" class="form-control bg-light small" name="orden" placeholder="Orden de Materiales..." aria-label="Orden" aria-describedby="basic-addon2">
+                            <div>&nbsp;</div>
+                            <div>&nbsp;</div>
+                            <div>&nbsp;</div>
+                            <input  type="text" class="form-control bg-light small" name="placa" placeholder="Placa de Transportista..." aria-label="Placa" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button name="btnAsignar"  class="btn btn-success" type="submit">
+                                    <i class="fa-solid fa-circle-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <?php
+      
+                        if(isset($_POST['btnAsignar']) && isset($_POST['orden']) && isset($_POST['placa'])) {
+                            $content = json_encode(array("nOrder" => $_POST['orden'], "nTransporte" => $_POST['placa'], "uCreation" => $_SESSION['usuario']));
+                            $url = "http://192.168.140.15:8080/Desarrollos/TransLogic/API/putCreation.php";
+                            $curl = curl_init($url);
+                            curl_setopt($curl, CURLOPT_HEADER, false);
+                            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($curl, CURLOPT_POST, true);
+                            curl_setopt($curl, CURLOPT_POSTFIELDS, $content);
+
+                            $response = curl_exec($curl);
+                            $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+                            curl_close($curl);
+
+                            if($status=200){
+                                echo '<p class="text-success">Datos Asignados Correctamente!</p>';
+                                header('location: ./asignar.php');
+                            }else{
+                                echo '<p class="text-danger">Error en la Asignacion de Datos, Si el problema continua favor llamar a Soporte</p>';
+                            }
+
+                        }
+
+                    ?>
+                    
+                    <hr class="sidebar-divider d-none d-md-block">
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Viajes de Material Pendientes</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Asignacion de viajes de Bodega</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="acarreosTable" name="acarreosTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered"  width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Fecha</th>
-                                            <th>Sucursal</th>
-                                            <th>Bodega</th>
-                                            <th>Proyecto</th>
-                                            <th>Correlativo</th>
+                                            <th>Fecha Asignado</th>
                                             <th>Documento</th>
+                                            <th>Contratista</th>
+                                            <th>Placa Transportista</th>
+                                            <th>Asignado por:</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                     <?php foreach($rs as $row){ ?>
                                         <tr>
-                                            <td><?=$row['Fecha']; ?></td>
-                                            <td><?=$row['Sucursal']; ?></td>
-                                            <td><?=$row['Bodega']; ?></td>
-                                            <td><?=$row['Proyecto']; ?></td>
-                                            <td><?=$row['Correlativo']; ?></td>
-                                            <td><?=$row['Documento']; ?></td>
+                                            <td><?=$row['dtCreacion']; ?></td>
+                                            <td><?=$row['numerodocumento']; ?></td>
+                                            <td><?=$row['nombre']; ?></td>
+                                            <td><?=$row['nTransporte']; ?></td>
+                                            <td><?=$row['uCreacion']; ?></td>
                                         </tr>
                                     <?php } ?>
                                     </tbody>

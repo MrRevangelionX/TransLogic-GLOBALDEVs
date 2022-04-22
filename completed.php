@@ -5,25 +5,10 @@
     }else{
     require_once('./cfg/db.php');
 
-    $consulta = "select TOP 1000
-                    CONVERT(DATE,a.fecha) as Fecha,
-                    b.nomempresa as Empresa,
-                    a.codsucursal,
-                    c.nomsucursal as Sucursal,
-                    d.nombodega as Bodega,
-                    a.correlativo as Correlativo,
-                    a.numerodocumento as Documento,
-                    a.codproyecto,
-                    e.nomproyecto as Proyecto
-                from inv_transaccion_enc a
-                inner join gen_empresa b on a.codempresa = b.codempresa
-                inner join gen_sucursal c on a.codsucursal = c.codsucursal
-                inner join gen_bodega d on a.codbodega = d.codbodega
-                full join gen_proyecto e on a.codproyecto = e.codproyecto
-                where a.fechadespacho is null and a.impresa = 1
-                and a.codtipomovimiento = 6 and a.codtipodoc = 8
-                --and fecha between CAST( GETDATE() - 30 AS Date ) and CAST( GETDATE() AS Date )
-                order by fecha desc, a.correlativo asc";
+    $consulta = "select * from wapp_proceso_translogic trans
+                inner join inv_transaccion_enc enc on trans.nOrden = enc.correlativo
+                inner join app_contratista cont on cont.codcontratista = enc.codcontratista
+                where dtCheckCompletado is not null";
 
     $rs = Query($consulta);
     
@@ -74,6 +59,11 @@
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
+            <li id="mnuAsignacion" class="nav-item">
+                <a class="nav-link" href="asignar.php">
+                    <i class="fa-solid fa-file-signature"></i>
+                    <span>Asignacion</span></a>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -89,6 +79,12 @@
                 <a class="nav-link" href="./completed.php">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Completados</span></a>
+            </li>
+
+            <li id="mnuContratistas" class="nav-item">
+                <a class="nav-link" href="./contratistas.php">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>Contratistas</span></a>
             </li>
 
             <!-- Divider -->
@@ -189,30 +185,30 @@
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Viajes de Material Pendientes</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Viajes de Completados</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="acarreosTable" name="acarreosTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Fecha</th>
-                                            <th>Sucursal</th>
-                                            <th>Bodega</th>
-                                            <th>Proyecto</th>
+                                            <th>Fecha Inicio</th>
+                                            <th>Fecha Fin</th>
                                             <th>Correlativo</th>
-                                            <th>Documento</th>
+                                            <th>N° Documento</th>
+                                            <th>Contratista</th>
+                                            <th>Transportista</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                     <?php foreach($rs as $row){ ?>
                                         <tr>
-                                            <td><?=$row['Fecha']; ?></td>
-                                            <td><?=$row['Sucursal']; ?></td>
-                                            <td><?=$row['Bodega']; ?></td>
-                                            <td><?=$row['Proyecto']; ?></td>
-                                            <td><?=$row['Correlativo']; ?></td>
-                                            <td><?=$row['Documento']; ?></td>
+                                            <td><?=$row['dtCreacion']; ?></td>
+                                            <td><?=$row['dtCheckCompletado']; ?></td>
+                                            <td><?=$row['nOrden']; ?></td>
+                                            <td><?=$row['numerodocumento']; ?></td>
+                                            <td><?=$row['nombre']; ?></td>
+                                            <td><?=$row['nTransporte']; ?></td>
                                         </tr>
                                     <?php } ?>
                                     </tbody>

@@ -50,7 +50,7 @@
                                                 name="pass" placeholder="Inserte su Password WEB">
                                         </div>
                                         <hr>
-                                        <button type="subimt" class="btn btn-user btn-block btn-primary">
+                                        <button type="subimt" class="btn btn-user btn-block btn-success">
                                             <i class="fab fa-google fa-fw"></i> Ingrese a GLOBAL
                                         </button>
                                     </form>

@@ -5,25 +5,9 @@
     }else{
     require_once('./cfg/db.php');
 
-    $consulta = "select TOP 1000
-                    CONVERT(DATE,a.fecha) as Fecha,
-                    b.nomempresa as Empresa,
-                    a.codsucursal,
-                    c.nomsucursal as Sucursal,
-                    d.nombodega as Bodega,
-                    a.correlativo as Correlativo,
-                    a.numerodocumento as Documento,
-                    a.codproyecto,
-                    e.nomproyecto as Proyecto
-                from inv_transaccion_enc a
-                inner join gen_empresa b on a.codempresa = b.codempresa
-                inner join gen_sucursal c on a.codsucursal = c.codsucursal
-                inner join gen_bodega d on a.codbodega = d.codbodega
-                full join gen_proyecto e on a.codproyecto = e.codproyecto
-                where a.fechadespacho is null and a.impresa = 1
-                and a.codtipomovimiento = 6 and a.codtipodoc = 8
-                --and fecha between CAST( GETDATE() - 30 AS Date ) and CAST( GETDATE() AS Date )
-                order by fecha desc, a.correlativo asc";
+    $consulta = "SELECT *
+                FROM app_contratista
+                where codestado = 1";
 
     $rs = Query($consulta);
     
@@ -84,11 +68,11 @@
             <hr class="sidebar-divider">
 
             <!-- Nav Item - Main -->
-            <li id="mnuRegistro" class="nav-item active">
+            <li id="mnuRegistro" class="nav-item">
                 <a class="nav-link" href="./main.php">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Registro</span></a>
-            </li>
+            </li>            
 
             <li id="mnuCompletados" class="nav-item">
                 <a class="nav-link" href="./completed.php">
@@ -96,7 +80,7 @@
                     <span>Completados</span></a>
             </li>
 
-            <li id="mnuContratistas" class="nav-item">
+            <li id="mnuContratistas" class="nav-item active">
                 <a class="nav-link" href="./contratistas.php">
                     <i class="fas fa-fw fa-wrench"></i>
                     <span>Contratistas</span></a>
@@ -208,22 +192,20 @@
                                     <thead>
                                         <tr>
                                             <th>Fecha</th>
-                                            <th>Sucursal</th>
-                                            <th>Bodega</th>
-                                            <th>Proyecto</th>
-                                            <th>Correlativo</th>
-                                            <th>Documento</th>
+                                            <th>Código</th>
+                                            <th>Nombre de Contratista</th>
+                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <?php foreach($rs as $row){ ?>
+                                    <?php foreach($rs as $row){ 
+                                        $codigo = $row['codcontratista'];
+                                    ?>
                                         <tr>
-                                            <td><?=$row['Fecha']; ?></td>
-                                            <td><?=$row['Sucursal']; ?></td>
-                                            <td><?=$row['Bodega']; ?></td>
-                                            <td><?=$row['Proyecto']; ?></td>
-                                            <td><?=$row['Correlativo']; ?></td>
-                                            <td><?=$row['Documento']; ?></td>
+                                            <td><?=$row['fechaingreso']; ?></td>
+                                            <td><?=$row['codcontratista']; ?></td>
+                                            <td><?=$row['nombre']; ?></td>
+                                            <td><a class="btn btn-info btn-block" onClick="asignarPIN('<?=$codigo?>');">Asignar PIN</a></td>
                                         </tr>
                                     <?php } ?>
                                     </tbody>
