@@ -1,4 +1,5 @@
 <?php
+    error_reporting(0);
     session_start();
     if(!isset($_SESSION['usuario']) or empty($_SESSION['usuario'])){
         header('location: check-logout.php');
@@ -78,6 +79,11 @@
                 <a class="nav-link" href="asignar.php">
                     <i class="fa-solid fa-file-signature"></i>
                     <span>Asignacion</span></a>
+            </li>
+            <li id="mnuAsignacion" class="nav-item">
+                <a class="nav-link" href="express.php">
+                    <i class="fa-solid fa-file-signature"></i>
+                    <span>Asignacion Express</span></a>
             </li>
 
             <!-- Divider -->
@@ -204,7 +210,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="acarreosTable" name="acarreosTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered" id="dataTablePlugin" name="acarreosTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th>Fecha</th>

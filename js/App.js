@@ -2,7 +2,7 @@ function closeSession(){
 Swal.fire({
   title: 'Seguro que desea salir de la aplicación?',
   text: "Deberá hacer loggin para ingresar de nuevo!",
-  icon: 'error',
+  icon: 'warning',
   showCancelButton: true,
   confirmButtonColor: '#AA0b0b',
   cancelButtonColor: '#000000',
@@ -21,7 +21,7 @@ Swal.fire({
 
 function asignarPIN(contratista){
   Swal.fire({
-    title: 'Ingrese el nuevo PIN del Contratista' + contratista,
+    title: 'Ingrese el nuevo PIN del Contratista',
     input: 'text',
     inputLabel: 'Nuevo PIN:',
     showCancelButton: true,
@@ -43,15 +43,18 @@ function asignarPIN(contratista){
       if (comfirm.isConfirmed) {
         $.ajax({
           type: "POST",
-          url: "url",
-          data: "INFORMACION A ENVIAR",
+          url: "./API/wsChangePIN.php",
+          data: {"contratista": contratista, "pin":result.value},
           dataType: "JSON",
+          success: function(){
+            Swal.fire({
+              title: 'PIN Cambiado correctamente',
+              icon: 'success',
+              showComfirmButton: false,
+              timer: 1500
+            })
+          }
         });
-        Swal.fire(
-          'Éxito!',
-          'PIN Asignado Correctamente',
-          'success'
-        )
       }
     })
   }

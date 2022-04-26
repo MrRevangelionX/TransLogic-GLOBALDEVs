@@ -65,6 +65,11 @@
                     <i class="fa-solid fa-file-signature"></i>
                     <span>Asignacion</span></a>
             </li>
+            <li id="mnuAsignacion" class="nav-item">
+                <a class="nav-link" href="express.php">
+                    <i class="fa-solid fa-file-signature"></i>
+                    <span>Asignacion Express</span></a>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -183,7 +188,7 @@
                 <div class="container-fluid">
                     
                     <!-- Assign Trip -->
-                    <form method="post">
+                    <form action="new-assign.php" method="POST">
                         <div class="input-group">
                             <input  type="text" class="form-control bg-light small" name="orden" placeholder="Orden de Materiales..." aria-label="Orden" aria-describedby="basic-addon2">
                             <div>&nbsp;</div>
@@ -191,46 +196,19 @@
                             <div>&nbsp;</div>
                             <input  type="text" class="form-control bg-light small" name="placa" placeholder="Placa de Transportista..." aria-label="Placa" aria-describedby="basic-addon2">
                             <div class="input-group-append">
-                                <button name="btnAsignar"  class="btn btn-success" type="submit">
-                                    <i class="fa-solid fa-circle-plus"></i>
+                                <button class="btn btn-success" type="submit">
+                                    <i class="fa-solid fa-circle-plus"></i><span> Asignar</span>
                                 </button>
                             </div>
                         </div>
                     </form>
-
-                    <?php
-      
-                        if(isset($_POST['btnAsignar']) && isset($_POST['orden']) && isset($_POST['placa'])) {
-                            $content = json_encode(array("nOrder" => $_POST['orden'], "nTransporte" => $_POST['placa'], "uCreation" => $_SESSION['usuario']));
-                            $url = "http://192.168.140.15:8080/Desarrollos/TransLogic/API/putCreation.php";
-                            $curl = curl_init($url);
-                            curl_setopt($curl, CURLOPT_HEADER, false);
-                            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                            curl_setopt($curl, CURLOPT_POST, true);
-                            curl_setopt($curl, CURLOPT_POSTFIELDS, $content);
-
-                            $response = curl_exec($curl);
-                            $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-                            curl_close($curl);
-
-                            if($status=200){
-                                echo '<p class="text-success">Datos Asignados Correctamente!</p>';
-                                header('location: ./asignar.php');
-                            }else{
-                                echo '<p class="text-danger">Error en la Asignacion de Datos, Si el problema continua favor llamar a Soporte</p>';
-                            }
-
-                        }
-
-                    ?>
-                    
+                   
                     <hr class="sidebar-divider d-none d-md-block">
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Asignacion de viajes de Bodega</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Viajes de Bodega Asignados SIN FINALIZAR</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">

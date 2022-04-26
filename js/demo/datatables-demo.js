@@ -1,8 +1,8 @@
 $(document).ready( function () {
-  $('#acarreosTable').DataTable( {
+  $('#dataTablePlugin').DataTable({
     dom: 'Bfrtip',
     buttons: [
         'print', 'excel', 'pdf'
     ]
-} );
-} );
+  });
+});

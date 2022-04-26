@@ -5,9 +5,9 @@
     $data = json_decode($json, TRUE);
 
     // DUMP HACIA UN ARCHIVO JSON
-    $myfile = fopen("asignaBodega.txt", "w");
-    fwrite($myfile, $json);
-    fclose($myfile);
+    // $myfile = fopen("asignaBodega.txt", "w");
+    // fwrite($myfile, $json);
+    // fclose($myfile);
 
     require_once('../cfg/db.php');
     require_once('./Printer/ThermalPrinter.php');
@@ -78,7 +78,7 @@
             ";
 
         // Se manda a imprimir el Ticket
-        //getTicket($qrCode, $body, $lista);
+        // getTicket($qrCode, $body, $lista);
 
     }else{
         array_push($asignacion['asignacion'], array( "orden_material" => "ERROR",

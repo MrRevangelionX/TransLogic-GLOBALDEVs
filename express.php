@@ -5,12 +5,17 @@
     }else{
     require_once('./cfg/db.php');
 
-    $consulta = "select * from wapp_proceso_translogic trans
-                inner join inv_transaccion_enc enc on trans.nOrden = enc.correlativo
-                inner join app_contratista cont on cont.codcontratista = enc.codcontratista
-                where dtCheckCompletado is not null";
+    $consulta = "select * from wapp_proceso_translogicEXP
+                where dtCheckCompletado is null
+                order by dtCreacion asc";
 
     $rs = Query($consulta);
+
+    $consulta2 = "select * from wapp_proceso_translogicEXP
+                where dtCheckCompletado is not null
+                order by dtCreacion asc";
+
+    $results = Query($consulta2);
     
     }
 ?>
@@ -64,7 +69,7 @@
                     <i class="fa-solid fa-file-signature"></i>
                     <span>Asignacion</span></a>
             </li>
-            <li id="mnuAsignacion" class="nav-item">
+            <li id="mnuAsignacion" class="nav-item active">
                 <a class="nav-link" href="express.php">
                     <i class="fa-solid fa-file-signature"></i>
                     <span>Asignacion Express</span></a>
@@ -80,7 +85,7 @@
                     <span>Registro</span></a>
             </li>            
 
-            <li id="mnuCompletados" class="nav-item active">
+            <li id="mnuCompletados" class="nav-item">
                 <a class="nav-link" href="./completed.php">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Completados</span></a>
@@ -120,8 +125,7 @@
                     </form>
 
                     <!-- Topbar Search -->
-                    <form
-                        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                         <div class="input-group">
                             <input hidden type="text" class="form-control bg-light border-0 small" placeholder="Buscar..."
                                 aria-label="Search" aria-describedby="basic-addon2">
@@ -186,34 +190,79 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
+                    
+                    <!-- Assign Trip -->
+                    <form action="exp-assign.php" method="POST">
+                            <input  type="text" class="form-control bg-light small" name="placa" placeholder="Placa de Transportista..." aria-label="Placa" aria-describedby="basic-addon2">
+                        <div class="form-group">
+                            <label for="txtDescripcion" class="form-label mt-4">Descripción:</label>
+                            <textarea class="form-control" name="txtDescripcion" maxlength="500" rows="5"></textarea>
+                        </div>
+                        <button class="btn btn-success" type="submit">
+                                    <i class="fa-solid fa-circle-plus"></i><span> Asignar Express</span>
+                        </button>
+                    </form>
+                   
+                    <hr class="sidebar-divider d-none d-md-block">
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Viajes de Completados</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Viajes Express Asignados SIN FINALIZAR</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTablePlugin" name="acarreosTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered"  width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Fecha Inicio</th>
-                                            <th>Fecha Fin</th>
-                                            <th>Correlativo</th>
-                                            <th>N° Documento</th>
-                                            <th>Contratista</th>
-                                            <th>Transportista</th>
+                                            <th>Fecha Asignado</th>
+                                            <th>Placa Transportista</th>
+                                            <th>Asignado por</th>
+                                            <th>Detalle</th>
+                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                     <?php foreach($rs as $row){ ?>
                                         <tr>
                                             <td><?=$row['dtCreacion']; ?></td>
-                                            <td><?=$row['dtCheckCompletado']; ?></td>
-                                            <td><?=$row['nOrden']; ?></td>
-                                            <td><?=$row['numerodocumento']; ?></td>
-                                            <td><?=$row['nombre']; ?></td>
                                             <td><?=$row['nTransporte']; ?></td>
+                                            <td><?=$row['uCreacion']; ?></td>
+                                            <td><?=$row['tDescripcion']; ?></td>
+                                            <td><a href="./exp-close.php?id=<?=$row['uID']; ?>" class="btn btn-danger btn-block">Completar</a></td>
+                                        </tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Viajes Express Asignados FINALIZADOS</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTablePlugin"  width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha Asignado</th>
+                                            <th>Placa Transportista</th>
+                                            <th>Asignado por</th>
+                                            <th>Detalle</th>
+                                            <th>Fecha Finalizado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach($results as $line){ ?>
+                                        <tr>
+                                            <td><?=$line['dtCreacion']; ?></td>
+                                            <td><?=$line['nTransporte']; ?></td>
+                                            <td><?=$line['uCreacion']; ?></td>
+                                            <td><?=$line['tDescripcion']; ?></td>
+                                            <td><?=$line['dtCheckCompletado']; ?></td>
                                         </tr>
                                     <?php } ?>
                                     </tbody>

@@ -4,7 +4,7 @@
     // $json = file_get_contents('./loginReq.txt');
     $data = json_decode($json, TRUE);
 
-    // // DUMP HACIA UN ARCHIVO JSON
+    // DUMP HACIA UN ARCHIVO JSON
     // $myfile = fopen("MaterialReq.txt", "w");
     // fwrite($myfile, $json);
     // fclose($myfile);
