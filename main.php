@@ -1,33 +1,9 @@
 <?php
-    error_reporting(0);
     session_start();
     if(!isset($_SESSION['usuario']) or empty($_SESSION['usuario'])){
         header('location: check-logout.php');
     }else{
-    require_once('./cfg/db.php');
-
-    $consulta = "select TOP 1000
-                    CONVERT(DATE,a.fecha) as Fecha,
-                    b.nomempresa as Empresa,
-                    a.codsucursal,
-                    c.nomsucursal as Sucursal,
-                    d.nombodega as Bodega,
-                    a.correlativo as Correlativo,
-                    a.numerodocumento as Documento,
-                    a.codproyecto,
-                    e.nomproyecto as Proyecto
-                from inv_transaccion_enc a
-                inner join gen_empresa b on a.codempresa = b.codempresa
-                inner join gen_sucursal c on a.codsucursal = c.codsucursal
-                inner join gen_bodega d on a.codbodega = d.codbodega
-                full join gen_proyecto e on a.codproyecto = e.codproyecto
-                where a.fechadespacho is null and a.impresa = 1
-                and a.codtipomovimiento = 6 and a.codtipodoc = 8
-                --and fecha between CAST( GETDATE() - 30 AS Date ) and CAST( GETDATE() AS Date )
-                order by fecha desc, a.correlativo asc";
-
-    $rs = Query($consulta);
-    
+        print_r('ok');
     }
 ?>
 
@@ -70,15 +46,15 @@
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            <li id="mnuDashboard" class="nav-item">
+            <li id="mnuDashboard" class="nav-item active">
                 <a class="nav-link" href="main.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
             <li id="mnuAsignacion" class="nav-item">
-                <a class="nav-link" href="asignar.php">
+                <a class="nav-link" href="bodega.php">
                     <i class="fa-solid fa-file-signature"></i>
-                    <span>Asignacion</span></a>
+                    <span>Asignacion Bodega</span></a>
             </li>
             <li id="mnuAsignacion" class="nav-item">
                 <a class="nav-link" href="express.php">
@@ -90,18 +66,6 @@
             <hr class="sidebar-divider">
 
             <!-- Nav Item - Main -->
-            <li id="mnuRegistro" class="nav-item active">
-                <a class="nav-link" href="./main.php">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Registro</span></a>
-            </li>
-
-            <li id="mnuCompletados" class="nav-item">
-                <a class="nav-link" href="./completed.php">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Completados</span></a>
-            </li>
-
             <li id="mnuContratistas" class="nav-item">
                 <a class="nav-link" href="./contratistas.php">
                     <i class="fas fa-fw fa-wrench"></i>
@@ -136,8 +100,7 @@
                     </form>
 
                     <!-- Topbar Search -->
-                    <form
-                        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                         <div class="input-group">
                             <input hidden type="text" class="form-control bg-light border-0 small" placeholder="Buscar..."
                                 aria-label="Search" aria-describedby="basic-addon2">
@@ -202,42 +165,7 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-
-                    <!-- DataTales Example -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Viajes de Material Pendientes</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTablePlugin" name="acarreosTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>Fecha</th>
-                                            <th>Sucursal</th>
-                                            <th>Bodega</th>
-                                            <th>Proyecto</th>
-                                            <th>Correlativo</th>
-                                            <th>Documento</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php foreach($rs as $row){ ?>
-                                        <tr>
-                                            <td><?=$row['Fecha']; ?></td>
-                                            <td><?=$row['Sucursal']; ?></td>
-                                            <td><?=$row['Bodega']; ?></td>
-                                            <td><?=$row['Proyecto']; ?></td>
-                                            <td><?=$row['Correlativo']; ?></td>
-                                            <td><?=$row['Documento']; ?></td>
-                                        </tr>
-                                    <?php } ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
+                    <!-- ##################################### - MAIN CONTENT - ####################################################                     -->
                 </div>
                 <!-- /.container-fluid -->
 

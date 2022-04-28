@@ -8,9 +8,39 @@
     $consulta = "select * from wapp_proceso_translogic trans
                 inner join inv_transaccion_enc enc on trans.nOrden = enc.correlativo
                 inner join app_contratista cont on cont.codcontratista = enc.codcontratista
-                where dtCheckCompletado is not null";
+                where dtCheckBodega is null
+                order by dtCreacion asc";
 
     $rs = Query($consulta);
+
+    $consulta2 = "select TOP 1000
+                    CONVERT(DATE,a.fecha) as Fecha,
+                    b.nomempresa as Empresa,
+                    a.codsucursal,
+                    c.nomsucursal as Sucursal,
+                    d.nombodega as Bodega,
+                    a.correlativo as Correlativo,
+                    a.numerodocumento as Documento,
+                    a.codproyecto,
+                    e.nomproyecto as Proyecto
+                from inv_transaccion_enc a
+                inner join gen_empresa b on a.codempresa = b.codempresa
+                inner join gen_sucursal c on a.codsucursal = c.codsucursal
+                inner join gen_bodega d on a.codbodega = d.codbodega
+                full join gen_proyecto e on a.codproyecto = e.codproyecto
+                where a.fechadespacho is null and a.impresa = 1
+                and a.codtipomovimiento = 6 and a.codtipodoc = 8
+                --and fecha between CAST( GETDATE() - 30 AS Date ) and CAST( GETDATE() AS Date )
+                order by fecha desc, a.correlativo asc";
+
+    $rs2 = Query($consulta2);
+
+    $consulta3 = "select * from wapp_proceso_translogic trans
+                inner join inv_transaccion_enc enc on trans.nOrden = enc.correlativo
+                inner join app_contratista cont on cont.codcontratista = enc.codcontratista
+                where dtCheckCompletado is not null";
+
+    $rs3 = Query($consulta3);
     
     }
 ?>
@@ -59,10 +89,10 @@
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
-            <li id="mnuAsignacion" class="nav-item">
-                <a class="nav-link" href="asignar.php">
+            <li id="mnuAsignacion" class="nav-item active">
+                <a class="nav-link" href="bodega.php">
                     <i class="fa-solid fa-file-signature"></i>
-                    <span>Asignacion</span></a>
+                    <span>Asignacion Bodega</span></a>
             </li>
             <li id="mnuAsignacion" class="nav-item">
                 <a class="nav-link" href="express.php">
@@ -74,18 +104,6 @@
             <hr class="sidebar-divider">
 
             <!-- Nav Item - Main -->
-            <li id="mnuRegistro" class="nav-item">
-                <a class="nav-link" href="./main.php">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Registro</span></a>
-            </li>            
-
-            <li id="mnuCompletados" class="nav-item active">
-                <a class="nav-link" href="./completed.php">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Completados</span></a>
-            </li>
-
             <li id="mnuContratistas" class="nav-item">
                 <a class="nav-link" href="./contratistas.php">
                     <i class="fas fa-fw fa-wrench"></i>
@@ -120,8 +138,7 @@
                     </form>
 
                     <!-- Topbar Search -->
-                    <form
-                        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                         <div class="input-group">
                             <input hidden type="text" class="form-control bg-light border-0 small" placeholder="Buscar..."
                                 aria-label="Search" aria-describedby="basic-addon2">
@@ -186,11 +203,96 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
+                    
+                    <!-- Assign Trip -->
+                    <form action="bod-assign.php" method="POST">
+                        <div class="input-group">
+                            <input  type="text" class="form-control bg-light small" id="txtOrden" name="orden" placeholder="Orden de Materiales..." aria-label="Orden" aria-describedby="basic-addon2">
+                            <div>&nbsp;</div>
+                            <div>&nbsp;</div>
+                            <div>&nbsp;</div>
+                            <input  type="text" class="form-control bg-light small" id="txtPlaca" name="placa" placeholder="Placa de Transportista..." aria-label="Placa" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-success" type="submit">
+                                    <i class="fa-solid fa-circle-plus"></i><span> Asignar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                   
+                    <hr class="sidebar-divider d-none d-md-block">
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Viajes de Completados</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Viajes de Bodega SIN ASIGNAR</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTablePlugin" name="acarreosTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Bodega</th>
+                                            <th>Proyecto</th>
+                                            <th>Correlativo</th>
+                                            <th>Documento</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach($rs2 as $row2){ ?>
+                                        <tr>
+                                            <td><?=$row2['Fecha']; ?></td>
+                                            <td><?=$row2['Bodega']; ?></td>
+                                            <td><?=$row2['Proyecto']; ?></td>
+                                            <td><?=$row2['Correlativo']; ?></td>
+                                            <td><?=$row2['Documento']; ?></td>
+                                            <td><button class="btn btn-block btn-success" onclick="asignar(<?=$row2['Correlativo']; ?>)"><i class="fa-solid fa-circle-plus"></i><span> Asignar</span></button></td>
+                                        </tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Viajes de Bodega Asignados SIN FINALIZAR</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered"  width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha Asignado</th>
+                                            <th>Documento</th>
+                                            <th>Contratista</th>
+                                            <th>Placa Transportista</th>
+                                            <th>Asignado por:</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach($rs as $row){ ?>
+                                        <tr>
+                                            <td><?=$row['dtCreacion']; ?></td>
+                                            <td><?=$row['numerodocumento']; ?></td>
+                                            <td><?=$row['nombre']; ?></td>
+                                            <td><?=$row['nTransporte']; ?></td>
+                                            <td><?=$row['uCreacion']; ?></td>
+                                        </tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Viajes de Bodega FINALIZADOS</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -206,14 +308,14 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <?php foreach($rs as $row){ ?>
+                                    <?php foreach($rs3 as $row3){ ?>
                                         <tr>
-                                            <td><?=$row['dtCreacion']; ?></td>
-                                            <td><?=$row['dtCheckCompletado']; ?></td>
-                                            <td><?=$row['nOrden']; ?></td>
-                                            <td><?=$row['numerodocumento']; ?></td>
-                                            <td><?=$row['nombre']; ?></td>
-                                            <td><?=$row['nTransporte']; ?></td>
+                                            <td><?=$row3['dtCreacion']; ?></td>
+                                            <td><?=$row3['dtCheckCompletado']; ?></td>
+                                            <td><?=$row3['nOrden']; ?></td>
+                                            <td><?=$row3['numerodocumento']; ?></td>
+                                            <td><?=$row3['nombre']; ?></td>
+                                            <td><?=$row3['nTransporte']; ?></td>
                                         </tr>
                                     <?php } ?>
                                     </tbody>

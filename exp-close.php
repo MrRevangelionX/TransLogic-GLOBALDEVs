@@ -23,6 +23,7 @@
             echo '<h4 class="alert-heading">ÉXITO!</h4>';
             echo '<p class="mb-0">LA TAREA SE COMPLETÓ CORRECTAMENTE</p>';
             echo '</center></div>';
+            include_once('./express.php');
         }else{
             echo '<div class="alert alert-dismissible alert-danger"><center>';
             echo '<h4 class="alert-heading">ALTO!</h4>';

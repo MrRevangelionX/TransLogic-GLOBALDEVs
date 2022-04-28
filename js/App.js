@@ -1,5 +1,5 @@
-function closeSession(){
-Swal.fire({
+async function closeSession(){
+await Swal.fire({
   title: 'Seguro que desea salir de la aplicación?',
   text: "Deberá hacer loggin para ingresar de nuevo!",
   icon: 'warning',
@@ -9,11 +9,13 @@ Swal.fire({
   confirmButtonText: 'Si, Salir!'
 }).then((result) => {
   if (result.isConfirmed) {
-    Swal.fire(
-      'Saliste!',
-      'Sesion finalizada correctamente.',
-      'success'
-    )
+    Swal.fire({
+      title: 'Saliste!',
+      text: 'Sesion finalizada correctamente.',
+      icon: 'success',
+      showConfirmButton: false,
+      timer: 1500
+    })
     location.href = './check-logout.php';
   }
 })
@@ -60,3 +62,9 @@ function asignarPIN(contratista){
   }
 })
 };
+
+function asignar(orden){
+  console.log(orden);
+  document.getElementById('txtOrden').value = orden;
+  document.getElementById('txtPlaca').focus();
+}

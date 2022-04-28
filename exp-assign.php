@@ -1,7 +1,5 @@
 <?php
-
-    error_reporting(0);
-      
+     
     if(!isset($_POST['txtDescripcion']) or !isset($_POST['placa']) or empty($_POST['txtDescripcion']) or empty($_POST['placa'])) {
         echo '<div class="alert alert-dismissible alert-danger"><center>';
         echo '<h4 class="alert-heading">ALTO!</h4>';

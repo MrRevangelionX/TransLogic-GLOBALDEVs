@@ -65,9 +65,9 @@
                     <span>Dashboard</span></a>
             </li>
             <li id="mnuAsignacion" class="nav-item">
-                <a class="nav-link" href="asignar.php">
+                <a class="nav-link" href="bodega.php">
                     <i class="fa-solid fa-file-signature"></i>
-                    <span>Asignacion</span></a>
+                    <span>Asignacion Bodega</span></a>
             </li>
             <li id="mnuAsignacion" class="nav-item active">
                 <a class="nav-link" href="express.php">
@@ -79,18 +79,6 @@
             <hr class="sidebar-divider">
 
             <!-- Nav Item - Main -->
-            <li id="mnuRegistro" class="nav-item">
-                <a class="nav-link" href="./main.php">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Registro</span></a>
-            </li>            
-
-            <li id="mnuCompletados" class="nav-item">
-                <a class="nav-link" href="./completed.php">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Completados</span></a>
-            </li>
-
             <li id="mnuContratistas" class="nav-item">
                 <a class="nav-link" href="./contratistas.php">
                     <i class="fas fa-fw fa-wrench"></i>

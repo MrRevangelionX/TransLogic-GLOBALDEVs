@@ -1,5 +1,4 @@
 <?php
-date_default_timezone_set('America/El_Salvador');
     if(!isset($_POST["usuario"]) || !isset($_POST["pass"]) || (empty($_POST["usuario"]) || empty($_POST["pass"]))){
         echo '<div class="alert alert-dismissible alert-danger"><center>';
         echo '<h4 class="alert-heading">ALERTA!</h4>';
