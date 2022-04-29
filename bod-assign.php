@@ -4,20 +4,22 @@
         echo '<h4 class="alert-heading">ALTO!</h4>';
         echo '<p class="mb-0">HUBO UN ERROR EN ESA ASIGNACION!, INTENTALO DE NUEVO</p>';
         echo '</center></div>';
-        include_once('./asignar.php');
+        include_once('./bodega.php');
     }else{
 
         session_start();
         require_once('./cfg/db.php');
-        
-        $nOrder = $_POST['orden'];
-        
+                
         $consulta = "select * from inv_transaccion_enc
-                     where correlativo = '" . $nOrder . "';";
+                     where correlativo = '" . $_POST['orden'] . "';";
 
-        $rs = Query($consulta);
+        $rs = countQuery($consulta);
 
-        if(!$rs){
+        // echo $rs;
+        // exit;
+
+        if($rs > 0){
+            $nOrder = $_POST['orden'];
             $nTransporte = $_POST['placa'];
             $uCreation = $_SESSION['usuario'];
 
@@ -32,7 +34,7 @@
                     echo '<h4 class="alert-heading">ÉXITO!</h4>';
                     echo '<p class="mb-0">ASIGNACION COMPLETADA!</p>';
                     echo '</center></div>';
-                    include_once('./asignar.php');
+                    include_once('./bodega.php');
                 }
             } catch (Exception $e) {
                 echo 'Excepción capturada: ', $e->getMessage(), "\n";
@@ -42,7 +44,7 @@
             echo '<h4 class="alert-heading">ALTO!</h4>';
             echo '<p class="mb-0">LA ORDEN DE MATERIALES DIGITADA NO EXISTE!</p>';
             echo '</center></div>';
-            include_once('./asignar.php');            
+            include_once('./bodega.php');            
         }
         
     }

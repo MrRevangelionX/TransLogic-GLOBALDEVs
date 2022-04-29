@@ -46,16 +46,20 @@ function asignarPIN(contratista){
         $.ajax({
           type: "POST",
           url: "./API/wsChangePIN.php",
-          data: {"contratista": contratista, "pin":result.value},
+          data: JSON.stringify({"contratista": contratista, "pin":result.value}),
           dataType: "JSON",
-          success: function(){
-            Swal.fire({
-              title: 'PIN Cambiado correctamente',
-              icon: 'success',
-              showComfirmButton: false,
-              timer: 1500
-            })
-          }
+          success: Swal.fire({
+                      title: 'PIN Cambiado correctamente',
+                      icon: 'success',
+                      showConfirmButton: false,
+                      timer: 1500
+                    }),
+          error: Swal.fire({
+                    title: 'PIN Cambiado correctamente',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500
+                  })
         });
       }
     })

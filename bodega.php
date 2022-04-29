@@ -8,30 +8,31 @@
     $consulta = "select * from wapp_proceso_translogic trans
                 inner join inv_transaccion_enc enc on trans.nOrden = enc.correlativo
                 inner join app_contratista cont on cont.codcontratista = enc.codcontratista
-                where dtCheckBodega is null
+                where dtCheckCompletado is null
                 order by dtCreacion asc";
 
     $rs = Query($consulta);
 
-    $consulta2 = "select TOP 1000
-                    CONVERT(DATE,a.fecha) as Fecha,
-                    b.nomempresa as Empresa,
-                    a.codsucursal,
-                    c.nomsucursal as Sucursal,
-                    d.nombodega as Bodega,
-                    a.correlativo as Correlativo,
-                    a.numerodocumento as Documento,
-                    a.codproyecto,
-                    e.nomproyecto as Proyecto
-                from inv_transaccion_enc a
-                inner join gen_empresa b on a.codempresa = b.codempresa
-                inner join gen_sucursal c on a.codsucursal = c.codsucursal
-                inner join gen_bodega d on a.codbodega = d.codbodega
-                full join gen_proyecto e on a.codproyecto = e.codproyecto
-                where a.fechadespacho is null and a.impresa = 1
-                and a.codtipomovimiento = 6 and a.codtipodoc = 8
-                --and fecha between CAST( GETDATE() - 30 AS Date ) and CAST( GETDATE() AS Date )
-                order by fecha desc, a.correlativo asc";
+    $consulta2 = "select 
+                        a.fechaserver as Fecha,
+                        b.nomempresa as Empresa,
+                        a.codsucursal,
+                        c.nomsucursal as Sucursal,
+                        d.nombodega as Bodega,
+                        a.correlativo as Correlativo,
+                        a.numerodocumento as Documento,
+                        a.codproyecto,
+                        e.nomproyecto as Proyecto
+                    --select *
+                    from inv_transaccion_enc a
+                    inner join gen_empresa b on a.codempresa = b.codempresa
+                    inner join gen_sucursal c on a.codsucursal = c.codsucursal
+                    inner join gen_bodega d on a.codbodega = d.codbodega
+                    full join gen_proyecto e on a.codproyecto = e.codproyecto
+                    where fecha between CAST( GETDATE() - 30 AS Date ) and CAST( GETDATE() AS Date )
+                    and a.fechadespacho is not null and a.impresa = 1
+                    and a.codtipomovimiento = 6 and a.codtipodoc = 8
+                    order by fecha desc, a.correlativo desc";
 
     $rs2 = Query($consulta2);
 
@@ -264,10 +265,11 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered"  width="100%" cellspacing="0">
+                                <table class="table table-bordered" id="dataTablePlugin" name="acarreosTable"  width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th>Fecha Asignado</th>
+                                            <th>Correlativo</th>
                                             <th>Documento</th>
                                             <th>Contratista</th>
                                             <th>Placa Transportista</th>
@@ -278,6 +280,7 @@
                                     <?php foreach($rs as $row){ ?>
                                         <tr>
                                             <td><?=$row['dtCreacion']; ?></td>
+                                            <td><?=$row['correlativo']; ?></td>
                                             <td><?=$row['numerodocumento']; ?></td>
                                             <td><?=$row['nombre']; ?></td>
                                             <td><?=$row['nTransporte']; ?></td>

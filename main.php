@@ -2,8 +2,6 @@
     session_start();
     if(!isset($_SESSION['usuario']) or empty($_SESSION['usuario'])){
         header('location: check-logout.php');
-    }else{
-        print_r('ok');
     }
 ?>
 
@@ -165,7 +163,10 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-                    <!-- ##################################### - MAIN CONTENT - ####################################################                     -->
+                    <div class="jumbotron shadow bg-light text-dark text-center">
+                        <h1 class="display-1">Transporte y Logistica</h1>
+                        <img src="./img/banner.jpg" style="width: 50%;">
+                    </div>
                 </div>
                 <!-- /.container-fluid -->
 
